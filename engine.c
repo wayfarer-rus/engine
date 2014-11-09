@@ -171,19 +171,6 @@ GLfloat PerspectiveAngle(GLfloat size, GLfloat dist) {
 
 #define BOING_DEBUG 0
 
-
-
-void init(void) {
-	/*
-	 * Clear background.
-	 */
-	glClearColor(0.55f, 0.55f, 0.55f, 0.f);
-
-	glShadeModel(GL_FLAT);
-}
-
-
-
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
