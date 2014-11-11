@@ -1,5 +1,45 @@
 #include "graphics.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <AL/alut.h>
+
+void playFile (const char *fileName) {
+  ALuint buffer;
+  ALuint source;
+  ALenum error;
+  ALint status;
+
+  /* Create an AL buffer from the given sound file. */
+  buffer = alutCreateBufferFromFile (fileName);
+  if (buffer == AL_NONE) {
+    error = alutGetError ();
+    fprintf (stderr, "Error loading file: '%s'\n",
+           alutGetErrorString (error));
+    alutExit ();
+    exit (EXIT_FAILURE);
+  }
+
+  /* Generate a single source, attach the buffer to it and start playing. */
+  alGenSources (1, &source);
+  alSourcei (source, AL_BUFFER, buffer);
+  //  alSourcei (source, AL_LOOPING, AL_TRUE);
+  alSourcePlay (source);
+  printf("!!!!!!!!!!");
+
+  /* Normally nothing should go wrong above, but one never knows... */
+  error = alGetError ();
+  if (error != ALUT_ERROR_NO_ERROR) {
+    fprintf (stderr, "%s\n", alGetString (error));
+    alutExit ();
+    exit (EXIT_FAILURE);
+  }
+
+  /* Check every 0.1 seconds if the sound is still playing. */
+}
+
 /*****************************************************************************
  * Truncate a degree.
  *****************************************************************************/
@@ -189,6 +229,7 @@ void BounceBall(double delta_t) {
   /* Bounce on floor / roof */
   if (ball_y >  BOUNCE_HEIGHT/2) {
     ball_y_inc = -0.75f - 1.f * (GLfloat)rand() / (GLfloat)RAND_MAX;
+    playFile ("1.wav");
   }
   if (ball_y < -BOUNCE_HEIGHT/2*0.85) {
     ball_y_inc =  0.75f + 1.f * (GLfloat)rand() / (GLfloat)RAND_MAX;
