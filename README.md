@@ -1,6 +1,6 @@
 engine
 ======
 
-Some glfw, lua and C for makeing games.
+This is an example of small C app that works with OpenGL, OpenAL, input and Lua.
 
-Look for main function. All the GL stuff is just example of sophisticated API.
+It might be a media framework or game engine someday.
