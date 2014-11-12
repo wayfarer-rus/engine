@@ -1,20 +1,17 @@
 #include "luamodule.h"
-#include "graphics.h"
-
-int lf_displayLua(lua_State *L) {
-  graphics_display();
-  return 0;
-}
 
 void bail(lua_State *L, char *msg) {
   fprintf(stderr, "\nFATAL ERROR:\n  %s: %s\n\n", msg, lua_tostring(L, -1));
   exit(1);
 }
 
+void luamodule_register(lua_State *L, const char *name, lua_CFunction function) {
+    lua_register(L, name, function);
+}
+
 lua_State* luamodule_init() {
   lua_State* L = luaL_newstate();						/* Create Lua state variable */
   luaL_openlibs(L);							/* Load Lua libraries */
-  lua_register(L, "displayLua", lf_displayLua);
 
   if (luaL_loadfile(L, "callfuncscript.lua"))	/* Load but don't run the Lua script */
     bail(L, "luaL_loadfile() failed");		/* Error out if file can't be read */
@@ -22,13 +19,6 @@ lua_State* luamodule_init() {
   if (lua_pcall(L, 0, 0, 0))					/* PRIMING RUN. FORGET THIS AND YOU'RE TOAST */
     bail(L, "lua_pcall() failed");			/* Error out if Lua file has an error */
 
-  printf("In C, calling Lua->tellme()\n");
-
-  lua_getglobal(L, "tellme");					/* Tell it to run callfuncscript.lua->tellme() */
-  if (lua_pcall(L, 0, 0, 0))					/* Run the function */
-    bail(L, "lua_pcall() failed");			/* Error out if Lua file has an error */
-
-  printf("Back in C again\n");
   printf("In C, calling Lua->square(6)\n");
 
   lua_getglobal(L, "square");					/* Tell it to run callfuncscript.lua->square() */

@@ -1,5 +1,5 @@
 function tellme()
-	io.write("This is coming from lua.tellme.\n")
+--	io.write("This is coming from lua.tellme.\n")
 	displayLua()
 end
 
