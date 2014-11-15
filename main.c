@@ -1,6 +1,7 @@
 #include "graphics.h"
 #include "luamodule.h"
 #include "alut_module.h"
+#include "gamepad_module.h"
 
 #define BOING_DEBUG 0
 
@@ -38,6 +39,8 @@ static GLfloat ball_x          = -RADIUS;
 static GLfloat ball_y          = -RADIUS;
 static GLfloat ball_x_inc      = 1.f;
 static GLfloat ball_y_inc      = 2.f;
+static GLfloat ball_x_delta    = 0.f;
+static GLfloat ball_y_delta    = 0.f;
 static DRAW_BALL_ENUM drawBallHow;
 
 static double  t;
@@ -128,21 +131,21 @@ void BounceBall(double delta_t) {
 
   /* Bounce on walls */
   if (ball_x > (BOUNCE_WIDTH/2 + WALL_R_OFFSET)) {
-    ball_x_inc = -0.5f - 0.75f * (GLfloat)rand() / (GLfloat)RAND_MAX;
+    ball_x_inc = ball_x_delta - 0.5f - 0.75f * (GLfloat)rand() / (GLfloat)RAND_MAX;
     deg_rot_y_inc = -deg_rot_y_inc;
   }
   if (ball_x < -(BOUNCE_HEIGHT/2 + WALL_L_OFFSET)) {
-    ball_x_inc =  0.5f + 0.75f * (GLfloat)rand() / (GLfloat)RAND_MAX;
+    ball_x_inc = ball_x_delta + 0.5f + 0.75f * (GLfloat)rand() / (GLfloat)RAND_MAX;
     deg_rot_y_inc = -deg_rot_y_inc;
   }
 
   /* Bounce on floor / roof */
   if (ball_y >  BOUNCE_HEIGHT/2) {
-    ball_y_inc = -0.75f - 1.f * (GLfloat)rand() / (GLfloat)RAND_MAX;
-    alutmodule_playFile("1.wav");
+    ball_y_inc = ball_y_delta - 0.75f - 1.f * (GLfloat)rand() / (GLfloat)RAND_MAX;
+    //    alutmodule_playFile("1.wav");
   }
   if (ball_y < -BOUNCE_HEIGHT/2*0.85) {
-    ball_y_inc =  0.75f + 1.f * (GLfloat)rand() / (GLfloat)RAND_MAX;
+    ball_y_inc = ball_y_delta + 0.75f + 1.f * (GLfloat)rand() / (GLfloat)RAND_MAX;
   }
 
   /* Update ball position */
@@ -370,6 +373,24 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     glfwSetWindowShouldClose(window, GL_TRUE);
 }
 
+void gamepad_pressed_callback(int id, int gamepad_button) {
+  printf("Button pressed: %d\n", gamepad_button);
+}
+
+void gamepad_released_callback(int id, int gamepad_button) {
+  printf("Button released: %d\n", gamepad_button);
+}
+
+void gamepad_axis_callback(int id, int axis_id, float axis_value) {
+  printf("Gamepad axis %d has value %.3f\n", axis_id, axis_value);
+
+  if (axis_id == LEFT_RIGHT_AXIS) {
+    ball_x_delta = axis_value;
+  } else if (axis_id == UP_DOWN_AXIS) {
+    ball_y_delta = axis_value;
+  }
+}
+
 int displayLua(lua_State *L) {
   display();
   return 0;
@@ -382,6 +403,13 @@ int main() {
   luamodule_register(L, "displayLua", displayLua);
   graphics_setKeyCallback(window, key_callback);
   graphics_setFramebufferSizeCallback(window, reshape);
+  gamepadmodule_setGamepadButtonPressedCallback(&gamepad_pressed_callback);
+  gamepadmodule_setGamepadButtonReleasedCallback(&gamepad_released_callback);
+  gamepadmodule_setGamepadAxisCallback(&gamepad_axis_callback);
+
+  if (gamepadmodule_checkGamepad(0)) {
+    gamepadmodule_initGamepadListener(0);
+  }
 
   for (;;) {
     /* Timing */
@@ -389,12 +417,12 @@ int main() {
     dt = t - t_old;
     t_old = t;
 
-
     luamodule_callLUA(L, "tellme");
     if (graphics_redraw(window))
       break;
   }
 
+  gamepadmodule_close();
   alutmodule_exit();
   luamodule_close(L);								/* Clean up, free the Lua state var */
   graphics_close();

@@ -4,12 +4,12 @@ CFLAGS=-I$(IDIR)
 
 ODIR=obj
 
-LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -llua -lm -lopenal -lalut
+LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -llua -lm -lopenal -lalut -lpthread
 
-_DEPS = graphics.h luamodule.h alut_module.h
+_DEPS = graphics.h luamodule.h alut_module.h gamepad_module.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = alut_module.o graphics.o luamodule.o main.o
+_OBJ = gamepad_module.o alut_module.o graphics.o luamodule.o main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

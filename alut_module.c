@@ -35,6 +35,7 @@ void alutmodule_playFile (const char *fileName) {
   /* Generate a single source, attach the buffer to it and start playing. */
   alGenSources (1, &source);
   alSourcei (source, AL_BUFFER, buffer);
+  alSourcef (source, AL_GAIN, 0.05f);
   //  alSourcei (source, AL_LOOPING, AL_TRUE);
   alSourcePlay (source);
   printf("!!!!!!!!!!");
