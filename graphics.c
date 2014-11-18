@@ -83,7 +83,7 @@ GLFWwindow* graphics_init(const int w, const int h, const char* title, void (*re
 
   glfwWindowHint(GLFW_DEPTH_BITS, 16);
 
-  window = glfwCreateWindow(w, w, title, NULL, NULL);
+  window = glfwCreateWindow(w, h, title, NULL, NULL);
   if (window == 0) {
     glfwTerminate();
     exit(EXIT_FAILURE);
