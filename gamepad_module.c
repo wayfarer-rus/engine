@@ -17,7 +17,9 @@ void gamepadmodule_initGamepadListener(const int id) {
   }
 
   listenGamepad = true;
-  //gamepadCallbackFunction = NULL;
+  gamepadButtonPressedCallbackFunction = NULL;
+  gamepadButtonReleasedCallbackFunction = NULL;
+  gamepadAxisCallbackFunction = NULL;
   int _id = id;
 
   if(pthread_create(&gamepadButtonListener, NULL, glfw_GamepadListener, &_id)) {
@@ -44,21 +46,26 @@ void *glfw_GamepadListener(void* gamepad_id_ptr) {
 
     for (i = 0; i < buttonsArraySize; ++i) {
       //printf("Gamepad button status: %d = %d\n", i, buttonsArray[i]);
-      if (gamepadButtonPressedCallbackFunction != NULL) {
-        if (buttonsArray[i] != 0 && gamepadButtonsPressedArray[i] == 0) {
+      if (buttonsArray[i] != 0 && gamepadButtonsPressedArray[i] == 0) {
+        if (gamepadButtonPressedCallbackFunction != NULL) {
           (*gamepadButtonPressedCallbackFunction)(*id, i);
-          gamepadButtonsPressedArray[i] = 1;
-        } else if (buttonsArray[i] == 0 && gamepadButtonsPressedArray[i] != 0) {
-          (*gamepadButtonReleasedCallbackFunction)(*id, i);
-          gamepadButtonsPressedArray[i] = 0;
         }
+
+        gamepadButtonsPressedArray[i] = 1;
+      } else if (buttonsArray[i] == 0 && gamepadButtonsPressedArray[i] != 0) {
+        if (gamepadButtonReleasedCallbackFunction != NULL) {
+          (*gamepadButtonReleasedCallbackFunction)(*id, i);
+        }
+
+        gamepadButtonsPressedArray[i] = 0;
       }
     }
 
+
     for (i = 0; i < axisArraySize; ++i) {
-      //printf("Axis ID: %d. Value: %.3f\n", i, axisArray[i]);
-      if (axisArray[i] != 0.0)
+      if (gamepadAxisCallbackFunction != NULL && axisArray[i] != 0.0) {
         (*gamepadAxisCallbackFunction)(*id, i, axisArray[i]);
+      }
     }
 
     nanosleep(&sleepTime, &remainingSleepTime);

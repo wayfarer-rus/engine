@@ -1,5 +1,6 @@
 #include "stb_image.h"
 #include "graphics.h"
+#include "gamepad_module.h"
 #include "guy_demo.h"
 
 void DrawGrid(void) {
@@ -139,6 +140,22 @@ void display() {
   glFlush();
 }
 
+void gamepad_pressed_callback(int id, int gamepad_button) {
+  if (jump_sequence == STOP)
+    jump_sequence = MOVE_UP;
+}
+
+void gamepad_axis_callback(int id, int axis_id, float axis_value) {
+  if (axis_id == LEFT_RIGHT_AXIS) {
+    if (axis_value < 0) {
+      guy_x -= 0.05*axis_value;
+    }
+    else if (axis_value > 0) {
+      guy_x += 0.05*axis_value;
+    }
+  }
+}
+
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
@@ -161,6 +178,12 @@ int guy_demo(void)
 
   GLFWwindow* window = graphics_init(640, 480, "Guy demo", &reshape);
   glfwSetKeyCallback(window, key_callback);
+
+  if (gamepadmodule_checkGamepad(0)) {
+    gamepadmodule_initGamepadListener(0);
+    gamepadmodule_setGamepadButtonPressedCallback(&gamepad_pressed_callback);
+    gamepadmodule_setGamepadAxisCallback(&gamepad_axis_callback);
+  }
 
   // Создадим одну текстуру OpenGL
   glGenTextures(1, &textureID);
@@ -205,6 +228,7 @@ int guy_demo(void)
       break;
   }
 
+  gamepadmodule_close();
   graphics_close();
   exit(EXIT_SUCCESS);
 }

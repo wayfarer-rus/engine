@@ -353,12 +353,12 @@ int ball_demo() {
   luamodule_register(L, "displayLua", displayLua);
   graphics_setKeyCallback(window, key_callback);
   graphics_setFramebufferSizeCallback(window, reshape);
-  gamepadmodule_setGamepadButtonPressedCallback(&gamepad_pressed_callback);
-  gamepadmodule_setGamepadButtonReleasedCallback(&gamepad_released_callback);
-  gamepadmodule_setGamepadAxisCallback(&gamepad_axis_callback);
 
   if (gamepadmodule_checkGamepad(0)) {
     gamepadmodule_initGamepadListener(0);
+    gamepadmodule_setGamepadButtonPressedCallback(&gamepad_pressed_callback);
+    gamepadmodule_setGamepadButtonReleasedCallback(&gamepad_released_callback);
+    gamepadmodule_setGamepadAxisCallback(&gamepad_axis_callback);
   }
 
   for (;;) {

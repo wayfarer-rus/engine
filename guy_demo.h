@@ -25,4 +25,7 @@ static void reshape(GLFWwindow* window, int w, int h);
 static void DrawGrid(void);
 static void DrawGuy();
 
+static void gamepad_pressed_callback(int id, int gamepad_button);
+static void gamepad_axis_callback(int id, int axis_id, float axis_value);
+
 extern int guy_demo(void);
