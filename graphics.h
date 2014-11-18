@@ -17,7 +17,7 @@
 /* Vertex type */
 typedef struct {float x; float y; float z;} vertex_t;
 
-GLFWwindow* graphics_init(const int w, const int h, const char* title);
+GLFWwindow* graphics_init(const int w, const int h, const char* title,  void (*reshape)(GLFWwindow*,int,int));
 void graphics_close();
 int graphics_redraw(GLFWwindow* window);
 void graphics_setKeyCallback(GLFWwindow* window, GLFWkeyfun function);

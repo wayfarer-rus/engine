@@ -73,7 +73,7 @@ GLfloat PerspectiveAngle(GLfloat size, GLfloat dist) {
   return degTheta;
 }
 
-GLFWwindow* graphics_init(const int w, const int h, const char* title) {
+GLFWwindow* graphics_init(const int w, const int h, const char* title, void (*reshape)(GLFWwindow*,int,int)) {
   GLFWwindow* window;
   int width, height;
 
@@ -93,7 +93,7 @@ GLFWwindow* graphics_init(const int w, const int h, const char* title) {
   glfwSwapInterval(1);
   glfwGetFramebufferSize(window, &width, &height);
 
-  reshape(window, width, height);
+  (*reshape)(window, width, height);
   glfwSetTime(0.0);
   g_init();
   return window;
