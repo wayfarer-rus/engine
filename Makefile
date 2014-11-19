@@ -6,10 +6,10 @@ ODIR=obj
 
 LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -llua -lm -lopenal -lalut -lpthread
 
-_DEPS = graphics.h luamodule.h alut_module.h gamepad_module.h stb_image.h ball_demo.h guy_demo.h
+_DEPS = graphics.h luamodule.h alut_module.h gamepad_module.h stb_image.h ball_demo.h guy_demo.h lua_guy_demo.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = gamepad_module.o alut_module.o graphics.o luamodule.o stb_image.o ball_demo.o guy_demo.o main.o
+_OBJ = gamepad_module.o alut_module.o graphics.o luamodule.o stb_image.o ball_demo.o guy_demo.o lua_guy_demo.o main.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

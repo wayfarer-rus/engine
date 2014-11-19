@@ -347,9 +347,9 @@ int displayLua(lua_State *L) {
 }
 
 int ball_demo() {
-  alutmodule_init();
+  alutmodule_init("callfuncscript.lua");
   GLFWwindow* window = graphics_init(400, 400, "Engine (classic Amiga demo)", &reshape);
-  lua_State* L = luamodule_init();
+  lua_State* L = luamodule_init("callfuncscript.lua");
   luamodule_register(L, "displayLua", displayLua);
   graphics_setKeyCallback(window, key_callback);
   graphics_setFramebufferSizeCallback(window, reshape);

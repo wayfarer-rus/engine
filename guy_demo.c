@@ -147,12 +147,7 @@ void gamepad_pressed_callback(int id, int gamepad_button) {
 
 void gamepad_axis_callback(int id, int axis_id, float axis_value) {
   if (axis_id == LEFT_RIGHT_AXIS) {
-    if (axis_value < 0) {
-      guy_x -= 0.05*axis_value;
-    }
-    else if (axis_value > 0) {
-      guy_x += 0.05*axis_value;
-    }
+    guy_x += 0.05*axis_value;
   }
 }
 

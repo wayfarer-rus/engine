@@ -63,7 +63,7 @@ void *glfw_GamepadListener(void* gamepad_id_ptr) {
 
 
     for (i = 0; i < axisArraySize; ++i) {
-      if (gamepadAxisCallbackFunction != NULL && axisArray[i] != 0.0) {
+      if (gamepadAxisCallbackFunction != NULL) {
         (*gamepadAxisCallbackFunction)(*id, i, axisArray[i]);
       }
     }
