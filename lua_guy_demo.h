@@ -14,10 +14,15 @@ static int allocatedTextures;
 
 struct textureAttr {
   GLuint id;
-  float zoom;
+  float size_x;
+  float size_y;
   float x;
   float y;
   float z;
+  float rot_angle;
+  float rot_x;
+  float rot_y;
+  float rot_z;
 };
 
 static struct textureAttr texturesArray[TEXTURE_LIST_SIZE];
@@ -44,5 +49,8 @@ int __loadTexture(lua_State *L);
 int __keyboardGetKeyPressed(lua_State *L);
 int __gamepadButtonPressed(lua_State *L);
 int __gamepadGetAxisValue(lua_State *L);
+int __playSound(lua_State *L);
+int __sleepMillis(lua_State *L);
+int __sleepSeconds(lua_State *L);
 
 extern int lua_guy_demo(void);

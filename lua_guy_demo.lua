@@ -1,15 +1,21 @@
 function mainLoop()
    -- Here we suppose that GLFW, ALUT, etc. already initialized
    -- So, let's get right into action
-   jumpMaxValue = 100
+   jumpMaxValue = 200
    jumpingSequenceStop, jumpingSequenceUp, jumpingSequenceDown = 0,1,2
    guy_x = 0.0;
    guy_y = 0.0;
    guy_size = 70;
+   angle = 0;
    jumpSequence = jumpingSequenceStop
+   -- Sounds
+   stepSoundFile = "resources/sound_sfx/guy_step.wav"
+   stepsSoundFile = "resources/sound_sfx/guy_steps.wav"
+   jumpSoundFile = "resources/sound_sfx/guy_jump.wav"
+   sfxVolume = 100
    -- Load guy's texture into game
    -- C function!
-   textureID = __loadTexture("resources/some_guy.png")
+   textureID = __loadTexture("resources/textures/some_guy.png")
 
    local loop = true
    while loop do
@@ -19,15 +25,17 @@ function mainLoop()
          guy_y = guy_y - 3.0
       end
 
-      if guy_y <= 0.0 then
+      if guy_y < 0.0 then
          jumpSequence = jumpingSequenceStop
          guy_y = 0.0
+         __playSound(stepSoundFile, sfxVolume)
       elseif (guy_y >= jumpMaxValue) and (jumpSequence ~= jumpingSequenceStop) then
          jumpSequence = jumpingSequenceDown
       end
 
       if not redraw() then loop = false end
       processInput()
+      __sleepMillis(100)
    end
 end
 
@@ -40,8 +48,9 @@ end
 function redraw()
    -- C function!
    __drawTexture(textureID, -- ID of the texture
-      guy_size,           -- zoom value for glScale
-      -guy_x,100-guy_y,0  -- offset for glTranslate
+      guy_size, guy_size,   -- zoom value for glScale(x, y, 0)
+      -guy_x,100-guy_y,0,   -- offset for glTranslate
+      angle,0,1,0           -- argments for glRotatef(angle, x, y, z)
    )
 
    -- C function!
@@ -55,10 +64,13 @@ function keyboard()
       __closeWindow()
    elseif key == "RIGHT" then
       guy_x = guy_x + 5
+      angle = 0
    elseif key == "LEFT" then
       guy_x = guy_x - 5
+      angle = 180
    elseif key == "SPACE" and jumpSequence == jumpingSequenceStop then
       jumpSequence = jumpingSequenceUp
+      __playSound(jumpSoundFile, sfxVolume)
    end
 end
 
@@ -66,12 +78,19 @@ end
 function gamepadButton()
    if __gamepadButtonPressed() and jumpSequence == jumpingSequenceStop then
       jumpSequence = jumpingSequenceUp
+      __playSound(jumpSoundFile, sfxVolume)
    end
 end
 
 function gamepadAxis()
    axisValue = __gamepadGetAxisValue()
    guy_x = guy_x + 5*axisValue
+
+   if axisValue < 0 then
+      angle = 180
+   elseif axisValue > 0 then
+      angle = 0
+   end
 end
 
 print("Priming run")

@@ -35,7 +35,6 @@ void *glfw_GamepadListener(void* gamepad_id_ptr) {
   const float* axisArray;
   int axisArraySize;
   int i;
-  struct timespec remainingSleepTime;
   struct timespec sleepTime;
   sleepTime.tv_sec = 0;
   sleepTime.tv_nsec = 50*1000;
@@ -68,7 +67,7 @@ void *glfw_GamepadListener(void* gamepad_id_ptr) {
       }
     }
 
-    nanosleep(&sleepTime, &remainingSleepTime);
+    nanosleep(&sleepTime, NULL);
   }
 }
 

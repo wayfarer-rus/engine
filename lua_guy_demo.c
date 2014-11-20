@@ -111,9 +111,10 @@ void DrawTextures() {
     glMatrixMode(GL_MODELVIEW);
 
     glTranslatef(texture.x, texture.y, texture.z);
+    glRotatef(texture.rot_angle, texture.rot_x, texture.rot_y, texture.rot_z);
 
     glColor3f(1,1,1);
-    glScalef(texture.zoom,texture.zoom,0);
+    glScalef(texture.size_x,texture.size_y,0);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture.id);
 
@@ -187,11 +188,14 @@ void init() {
   luamodule_register(L, "__gamepadGetAxisValue", __gamepadGetAxisValue);
   luamodule_register(L, "__gamepadButtonPressed", __gamepadButtonPressed);
   luamodule_register(L, "__keyboardGetKeyPressed", __keyboardGetKeyPressed);
+  luamodule_register(L, "__playSound", __playSound);
+  luamodule_register(L, "__sleepMillis", __sleepMillis);
+  luamodule_register(L, "__sleepSeconds", __sleepSeconds);
 }
 
 int __loadTexture(lua_State *L) {
   if (lua_gettop(L) != 1 || !lua_isstring(L, 1)) {
-    lua_pushstring(L, "incorrect argument");
+    lua_pushstring(L, "incorrect argument for __loadTexture");
     lua_error(L);
   }
 
@@ -238,25 +242,35 @@ void clear() {
 }
 
 int __drawTexture(lua_State *L) {
-  if (lua_gettop(L) != 5) {
-    lua_pushstring(L, "incorrect arguments");
+  if (lua_gettop(L) != 10) {
+    lua_pushstring(L, "incorrect arguments for __drawTexture");
     lua_error(L);
   }
 
   GLuint textureID = lua_tonumber(L, 1);
-  float zoom = lua_tonumber(L, 2);
-  float x = lua_tonumber(L, 3);
-  float y = lua_tonumber(L, 4);
-  float z = lua_tonumber(L, 5);
+  float size_x = lua_tonumber(L, 2);
+  float size_y = lua_tonumber(L, 3);
+  float x = lua_tonumber(L, 4);
+  float y = lua_tonumber(L, 5);
+  float z = lua_tonumber(L, 6);
+  float angle = lua_tonumber(L, 7);
+  float rot_x = lua_tonumber(L, 8);
+  float rot_y = lua_tonumber(L, 9);
+  float rot_z = lua_tonumber(L, 10);
 
   int i;
 
   for (i = 0; i < allocatedTextures; ++i) {
     if (texturesArray[i].id == textureID) {
-      texturesArray[i].zoom = zoom;
+      texturesArray[i].size_x = size_x;
+      texturesArray[i].size_y = size_y;
       texturesArray[i].x = x;
       texturesArray[i].y = y;
       texturesArray[i].z = z;
+      texturesArray[i].rot_angle = angle;
+      texturesArray[i].rot_x = rot_x;
+      texturesArray[i].rot_y = rot_y;
+      texturesArray[i].rot_z = rot_z;
       break;
     }
   }
@@ -299,6 +313,46 @@ int __gamepadButtonPressed(lua_State *L) {
 int __gamepadGetAxisValue(lua_State *L) {
   lua_pushnumber(L,gamepad_axis_value);
   return 1;
+}
+
+int __playSound(lua_State *L) {
+  if (lua_gettop(L) != 2) {
+    lua_pushstring(L, "incorrect arguments for __playSound");
+    lua_error(L);
+  }
+
+  char* fileName = lua_tostring(L, 1);
+  float volume = lua_tonumber(L, 2);
+  alutmodule_playFile(fileName, volume, false);
+  return 0;
+}
+
+int __sleepMillis(lua_State *L) {
+  if (lua_gettop(L) != 1) {
+    lua_pushstring(L, "incorrect arguments for __sleepMillis");
+    lua_error(L);
+  }
+
+  long m = (long)lua_tonumber(L, 1);
+  struct timespec sleepTime;
+  sleepTime.tv_sec = 0;
+  sleepTime.tv_nsec = m*1000;
+  nanosleep(&sleepTime, NULL);
+  return 0;
+}
+
+int __sleepSeconds(lua_State *L) {
+  if (lua_gettop(L) != 1) {
+    lua_pushstring(L, "incorrect arguments for __sleepMillis");
+    lua_error(L);
+  }
+
+  long s = (long)lua_tonumber(L, 1);
+  struct timespec sleepTime;
+  sleepTime.tv_sec = s;
+  sleepTime.tv_nsec = 0;
+  nanosleep(&sleepTime, NULL);
+  return 0;
 }
 
 int lua_guy_demo(void)

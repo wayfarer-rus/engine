@@ -16,7 +16,7 @@ void alutmodule_exit() {
   }
 }
 
-void alutmodule_playFile (const char *fileName) {
+void alutmodule_playFile (const char *fileName, const float volume, const bool loop) {
   ALuint buffer;
   ALuint source;
   ALenum error;
@@ -35,10 +35,9 @@ void alutmodule_playFile (const char *fileName) {
   /* Generate a single source, attach the buffer to it and start playing. */
   alGenSources (1, &source);
   alSourcei (source, AL_BUFFER, buffer);
-  alSourcef (source, AL_GAIN, 0.05f);
-  //  alSourcei (source, AL_LOOPING, AL_TRUE);
+  alSourcef (source, AL_GAIN, volume/100.0);
+  alSourcei (source, AL_LOOPING, loop);
   alSourcePlay (source);
-  printf("!!!!!!!!!!");
 
   /* Normally nothing should go wrong above, but one never knows... */
   error = alGetError ();
@@ -47,6 +46,4 @@ void alutmodule_playFile (const char *fileName) {
     alutExit ();
     exit (EXIT_FAILURE);
   }
-
-  /* Check every 0.1 seconds if the sound is still playing. */
 }
