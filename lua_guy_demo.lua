@@ -9,9 +9,9 @@ function mainLoop()
    angle = 0;
    jumpSequence = jumpingSequenceStop
    -- Sounds
-   stepSoundFile = "resources/sound_sfx/guy_step.wav"
-   stepsSoundFile = "resources/sound_sfx/guy_steps.wav"
-   jumpSoundFile = "resources/sound_sfx/guy_jump.wav"
+   stepSoundFile = __loadSoundFile("resources/sound_sfx/guy_step.wav")
+   stepsSoundFile = __loadSoundFile("resources/sound_sfx/guy_steps.wav")
+   jumpSoundFile = __loadSoundFile("resources/sound_sfx/guy_jump.wav")
    sfxVolume = 100
    -- Load guy's texture into game
    -- C function!
@@ -65,12 +65,14 @@ function keyboard()
    elseif key == "RIGHT" then
       guy_x = guy_x + 5
       angle = 0
+      if jumpSequence == jumpingSequenceStop then __playSound(stepsSoundFile, sfxVolume) end
    elseif key == "LEFT" then
       guy_x = guy_x - 5
       angle = 180
+      __playSound(stepsSoundFile, sfxVolume)
    elseif key == "SPACE" and jumpSequence == jumpingSequenceStop then
       jumpSequence = jumpingSequenceUp
-      __playSound(jumpSoundFile, sfxVolume)
+      if jumpSequence == jumpingSequenceStop then __playSound(stepsSoundFile, sfxVolume) end
    end
 end
 
@@ -88,8 +90,10 @@ function gamepadAxis()
 
    if axisValue < 0 then
       angle = 180
+      if jumpSequence == jumpingSequenceStop then __playSound(stepsSoundFile, sfxVolume) end
    elseif axisValue > 0 then
       angle = 0
+      if jumpSequence == jumpingSequenceStop then __playSound(stepsSoundFile, sfxVolume) end
    end
 end
 

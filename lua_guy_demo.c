@@ -191,6 +191,7 @@ void init() {
   luamodule_register(L, "__playSound", __playSound);
   luamodule_register(L, "__sleepMillis", __sleepMillis);
   luamodule_register(L, "__sleepSeconds", __sleepSeconds);
+  luamodule_register(L, "__loadSoundFile", __loadSoundFile);
 }
 
 int __loadTexture(lua_State *L) {
@@ -315,15 +316,27 @@ int __gamepadGetAxisValue(lua_State *L) {
   return 1;
 }
 
+int __loadSoundFile(lua_State *L) {
+  if (lua_gettop(L) != 1) {
+    lua_pushstring(L, "incorrect arguments for __loadSoundFile");
+    lua_error(L);
+  }
+
+  char *fileName = lua_tostring(L,1);
+  int id = alutmodule_loadFile(fileName);
+  lua_pushnumber(L,id);
+  return 1;
+}
+
 int __playSound(lua_State *L) {
   if (lua_gettop(L) != 2) {
     lua_pushstring(L, "incorrect arguments for __playSound");
     lua_error(L);
   }
 
-  char* fileName = lua_tostring(L, 1);
+  int fileId = (int)lua_tonumber(L, 1);
   float volume = lua_tonumber(L, 2);
-  alutmodule_playFile(fileName, volume, false);
+  alutmodule_playFile(fileId, volume, false);
   return 0;
 }
 

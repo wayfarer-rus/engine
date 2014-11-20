@@ -49,6 +49,7 @@ int __loadTexture(lua_State *L);
 int __keyboardGetKeyPressed(lua_State *L);
 int __gamepadButtonPressed(lua_State *L);
 int __gamepadGetAxisValue(lua_State *L);
+int __loadSoundFile(lua_State *L);
 int __playSound(lua_State *L);
 int __sleepMillis(lua_State *L);
 int __sleepSeconds(lua_State *L);

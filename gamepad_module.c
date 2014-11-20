@@ -69,6 +69,7 @@ void *glfw_GamepadListener(void* gamepad_id_ptr) {
 
     nanosleep(&sleepTime, NULL);
   }
+  pthread_exit(NULL);
 }
 
 void gamepadmodule_close() {
