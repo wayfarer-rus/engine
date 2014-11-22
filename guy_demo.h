@@ -1,3 +1,4 @@
+#include <chipmunk.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -5,6 +6,9 @@
 
 #define GLFW_INCLUDE_GLU
 #include <GLFW/glfw3.h>
+
+#define GUY_TYPE 1
+#define FLOR_TYPE 2
 
 typedef enum {MOVE_UP, MOVE_DOWN, STOP} jump_sequence_t;
 
@@ -15,6 +19,7 @@ static float guy_zoom;
 static float guy_x;
 static float guy_y;
 static jump_sequence_t jump_sequence;
+static cpBody *guyBody;
 
 static const int jump_max_value = 100;
 
@@ -27,5 +32,8 @@ static void DrawGuy();
 
 static void gamepad_pressed_callback(int id, int gamepad_button);
 static void gamepad_axis_callback(int id, int axis_id, float axis_value);
+
+static int begin(cpArbiter *arb, cpSpace *space, void *unused);
+static void postStepRemove(cpSpace *space, cpShape *shape, void *unused);
 
 extern int guy_demo(void);

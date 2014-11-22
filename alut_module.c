@@ -46,7 +46,7 @@ void alutmodule_playFile (const int id, const float volume, const bool loop) {
   ALint status;
   alGetSourcei(source, AL_SOURCE_STATE, &status);
 
-  if ((status == AL_PLAYING))
+  if (status == AL_PLAYING)
     return;
 
   printf("alut_player: %d | %.2f | %d\n", id, volume, loop);

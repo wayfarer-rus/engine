@@ -1,10 +1,10 @@
 IDIR =.
 CC=gcc
-CFLAGS=-I$(IDIR)
+CFLAGS=-O2 -I$(IDIR) -I/usr/include/chipmunk/
 
 ODIR=obj
 
-LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -llua -lm -lopenal -lalut -lpthread
+LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -llua -lm -lopenal -lalut -lpthread -lchipmunk
 
 _DEPS = graphics.h luamodule.h alut_module.h gamepad_module.h stb_image.h ball_demo.h guy_demo.h lua_guy_demo.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
@@ -22,4 +22,4 @@ engine: $(OBJ)
 .PHONY: clean
 
 clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
+	rm -f $(ODIR)/*.o *~ engine $(INCDIR)/*~

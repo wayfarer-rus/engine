@@ -9,12 +9,6 @@ static int sfxIterator;
 static ALuint sfxFiles[SFX_BUFFER_SIZE];
 static ALuint sfxSources[SFX_BUFFER_SIZE];
 
-struct alut_player_attr {
-  int id;
-  float volume;
-  bool loop;
-};
-
 void alutmodule_init();
 void alutmodule_exit();
 

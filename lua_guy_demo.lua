@@ -15,7 +15,7 @@ function mainLoop()
    sfxVolume = 100
    -- Load guy's texture into game
    -- C function!
-   textureID = __loadTexture("resources/textures/some_guy.png")
+   textureID = __loadTexture("resources/textures/some_guy_2.png")
 
    local loop = true
    while loop do
@@ -48,7 +48,7 @@ end
 function redraw()
    -- C function!
    __drawTexture(textureID, -- ID of the texture
-      guy_size, guy_size,   -- zoom value for glScale(x, y, 0)
+      guy_size/2, guy_size,   -- zoom value for glScale(x, y, 0)
       -guy_x,100-guy_y,0,   -- offset for glTranslate
       angle,0,1,0           -- argments for glRotatef(angle, x, y, z)
    )
@@ -69,10 +69,10 @@ function keyboard()
    elseif key == "LEFT" then
       guy_x = guy_x - 5
       angle = 180
-      __playSound(stepsSoundFile, sfxVolume)
+      if jumpSequence == jumpingSequenceStop then __playSound(stepsSoundFile, sfxVolume) end
    elseif key == "SPACE" and jumpSequence == jumpingSequenceStop then
       jumpSequence = jumpingSequenceUp
-      if jumpSequence == jumpingSequenceStop then __playSound(stepsSoundFile, sfxVolume) end
+      __playSound(jumpSoundFile, sfxVolume)
    end
 end
 
