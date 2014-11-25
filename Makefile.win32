@@ -1,0 +1,42 @@
+vpath %.c ./src
+IDIR =./include
+CC=gcc
+ODIR=obj
+
+GLFW_DIR=./win32_dependency_libs/glfw-3.0.4.bin.WIN32
+ALUT_DIR=./win32_dependency_libs/freealut-1.1.0-bin
+OPENAL_DIR=./win32_dependency_libs/openal
+LUA_DIR=./win32_dependency_libs/lua-5.2.3
+CHIPMUNK_DIR=./win32_dependency_libs/chipmunk
+
+INCLUDES=-I$(IDIR) -I$(GLFW_DIR)/include -I$(ALUT_DIR)/include -I$(OPENAL_DIR)/include -I$(LUA_DIR)/include -I$(CHIPMUNK_DIR)/include
+CFLAGS=-O2
+ODIR=obj
+LDPATH=-L$(GLFW_DIR)/lib-mingw -L$(ALUT_DIR)/lib -L$(OPENAL_DIR)/libs/Win32 -L$(LUA_DIR)/lib -L$(CHIPMUNK_DIR)/lib
+LIBS=-llua52 -lglfw3 -lgdi32 -lopengl32 -lglu32 -lm -lopenal32 -lalut -lpthread -lchipmunk
+
+src = crossplatform_utils.c gamepad_module.c graphics.c stb_image.c alut_module.c lua_module.c engine_core.c engine_main.c
+objects = $(patsubst %.c,$(ODIR)/%.o,$(src))
+
+program=engine
+
+.PHONY: all
+all: $(program)
+
+$(program): $(objects)
+	$(CC) -o win32_bin/$@ $^ $(CFLAGS) $(LDPATH) $(LIBS)
+	xcopy /I /Y /Q /R /S resources win32_bin\resources
+	xcopy /I /Y /Q /R *.lua win32_bin
+
+$(objects): | obj
+
+obj:
+	@mkdir -p $@
+
+obj/%.o : %.c
+	@echo $<
+	$(CC) $(CFLAGS) -c $< -o $@
+
+.PHONY: clean
+clean:
+	del /F /Q "$(ODIR)\*" "*~" "win32_bin\engine.exe"

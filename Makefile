@@ -1,25 +1,32 @@
-IDIR =.
+vpath %.c ./src
+IDIR =./include
 CC=gcc
-CFLAGS=-O2 -I$(IDIR) -I/usr/include/chipmunk/
-
 ODIR=obj
+CFLAGS=-O2 -I$(IDIR) -I/usr/include/chipmunk
+LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -lm -pthread -lchipmunk -lopenal -lalut -llua
 
-LIBS=-lglfw -lXi -lXrandr -lGL -lGLU -llua -lm -lopenal -lalut -lpthread -lchipmunk
+src = crossplatform_utils.c gamepad_module.c graphics.c stb_image.c alut_module.c lua_module.c engine_core.c engine_main.c
+objects = $(patsubst %.c,obj/%.o,$(src))
 
-_DEPS = graphics.h luamodule.h alut_module.h gamepad_module.h stb_image.h ball_demo.h guy_demo.h lua_guy_demo.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+program=engine
 
-_OBJ = gamepad_module.o alut_module.o graphics.o luamodule.o stb_image.o ball_demo.o guy_demo.o lua_guy_demo.o main.o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+.PHONY: all
+all: $(program)
 
+$(program): $(objects)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
-$(ODIR)/%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+$(objects): | obj
 
-engine: $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+obj:
+	@mkdir -p $@
+
+obj/%.o : %.c
+	@echo $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
-
 clean:
-	rm -f $(ODIR)/*.o *~ engine $(INCDIR)/*~
+	rm -f $(ODIR)/*.o *~ $(program)
+
+
