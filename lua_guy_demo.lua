@@ -15,7 +15,10 @@ function mainLoop()
    sfxVolume = 100
    -- Load guy's texture into game
    brickSize = 20;
-   bricksCount = 33;
+   local florCount = 32;
+   local leftWallCount = 10;
+   local rightWallCount = 10;
+   bricksCount = florCount + leftWallCount + rightWallCount
    bricksArray = {}
    bricksArray[1] = __loadTexture("resources/textures/brick_texture.png")
 
@@ -34,13 +37,34 @@ function mainLoop()
    )
    __setPosition(guyId, 0, 0);
 
-   local startPos_x = -320;
+   -- Flor bricks
+   local startPos_x = -320 + brickSize/2;
    local startPos_y = -180;
 
-   for i =1, bricksCount do
+   for i = 1, florCount do
       __applyPhysics(bricksArray[i], 0, 1, brickSize, brickSize, "static")
       __setPosition(bricksArray[i], startPos_x, startPos_y);
       startPos_x = startPos_x + brickSize;
+   end
+   -- Left wall bricks
+   startPos_x = -320 + brickSize/2;
+   startPos_y = -180 + brickSize;
+
+   for i =1, leftWallCount do
+      i = i + florCount
+      __applyPhysics(bricksArray[i], 0, 1, brickSize, brickSize, "static")
+      __setPosition(bricksArray[i], startPos_x, startPos_y);
+      startPos_y = startPos_y + brickSize;
+   end
+   -- Right wall bricks
+   startPos_x = 320 - brickSize/2;
+   startPos_y = -180 + brickSize;
+
+   for i =1, rightWallCount do
+      i = i + florCount + leftWallCount
+      __applyPhysics(bricksArray[i], 0, 1, brickSize, brickSize, "static")
+      __setPosition(bricksArray[i], startPos_x, startPos_y);
+      startPos_y = startPos_y + brickSize;
    end
 
    local loop = true
@@ -59,17 +83,13 @@ function mainLoop()
       end
 
       local vel_x, vel_y = __getBodysVelocity(guyId)
-      print(string.format("guy's velocity: [%.2f; %.2f]\n", vel_x, vel_y))
+--      print(string.format("guy's velocity: [%.2f; %.2f]\n", vel_x, vel_y))
       if vel_y == 0.0 then
          jumpSequence = jumpingSequenceStop
       end
---      for i=1, bricksCount do
---         x, y = __getPosition(bricksArray[i]);
---         io.write(string.format("brick%d [%.2f ; %.2f]\n", i, x, y))
---      end
 
       __sleepMillis(1/60*1000) -- 1/60 of a second
-      print(string.format("elapsed time: %.2f\n", os.clock() - x))
+--      print(string.format("elapsed time: %.2f\n", os.clock() - x))
    end
 end
 

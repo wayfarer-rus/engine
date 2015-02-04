@@ -21,12 +21,7 @@ void alutmodule_exit() {
 
   alDeleteBuffers(SFX_BUFFER_SIZE, sfxFiles);
   alDeleteSources(SFX_BUFFER_SIZE, sfxSources);
-
-  if (!alutExit ()) {
-    ALenum error = alutGetError ();
-    fprintf (stderr, "%s\n", alutGetErrorString (error));
-    //    exit (EXIT_FAILURE);
-  }
+  alutExit();
 }
 
 int alutmodule_loadFile(const char *fileName) {

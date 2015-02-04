@@ -242,6 +242,8 @@ int __loadTexture(lua_State *L) {
 
   struct textureAttr newTexture;
   newTexture.textureId = allocatedTextures++;
+  newTexture.physics = NULL;
+  newTexture.drawIt = false;
   texturesAttr[luaTextures] = newTexture;
 
   lua_pushnumber(L, luaTextures++);
@@ -268,11 +270,11 @@ int __copyTexture(lua_State *L) {
 }
 
 void clear() {
+  luamodule_close(L);
   glDeleteTextures(TEXTURE_LIST_SIZE, texturesArray);
   gamepadmodule_close();
   graphics_close();
   alutmodule_exit();
-  luamodule_close(L);
 }
 
 int __drawTexture(lua_State *L) {
@@ -403,7 +405,7 @@ int engine_core(void)
 {
   init();
   // init Chipmunk2D
-  cpVect gravity = cpv(0, -2000);
+  cpVect gravity = cpv(0, -1000);
   space = cpSpaceNew();
   cpBody *staticBody = space->staticBody;
   cpSpaceSetGravity(space, gravity);
@@ -434,7 +436,7 @@ int engine_core(void)
   cpShapeFree(wall2);
   cpSpaceFree(space);
 
-  pthread_exit(NULL);
+  //pthread_exit(NULL);
 }
 
 int begin(cpArbiter *arb, cpSpace *space, void *unused) {
@@ -451,33 +453,36 @@ int begin(cpArbiter *arb, cpSpace *space, void *unused) {
   int sBodyInd;
   int i;
 
-  if (a->collision_type == STATIC_BODY_TYPE && b->collision_type == DYNAMIC_BODY_TYPE) {
-    for (i = 0; i < luaTextures; ++i) {
-      if (texturesAttr[i].physics) {
-        if (texturesAttr[i].physics->shape == b) {
-          dBodyInd = i;
-        }
-        else if (texturesAttr[i].physics->shape == a) {
-          sBodyInd = i;
-        }
-      }
-    }
-  }
-  else if (b->collision_type == STATIC_BODY_TYPE && a->collision_type == DYNAMIC_BODY_TYPE) {
-    for (i = 0; i < luaTextures; ++i) {
-      if (texturesAttr[i].physics) {
-        if (texturesAttr[i].physics->shape == a) {
-          dBodyInd = i;
-        }
-        else if (texturesAttr[i].physics->shape == b) {
-          sBodyInd = i;
+  if (a != NULL && b != NULL) {
+    if (a->collision_type == STATIC_BODY_TYPE && b->collision_type == DYNAMIC_BODY_TYPE) {
+      for (i = 0; i < luaTextures; ++i) {
+        if (texturesAttr[i].physics != NULL) {
+          if (texturesAttr[i].physics->shape == b) {
+            dBodyInd = i;
+          }
+          else if (texturesAttr[i].physics->shape == a) {
+            sBodyInd = i;
+          }
         }
       }
     }
-  }
+    else if (b->collision_type == STATIC_BODY_TYPE && a->collision_type == DYNAMIC_BODY_TYPE) {
+      for (i = 0; i < luaTextures; ++i) {
+        if (texturesAttr[i].physics != NULL) {
+          if (texturesAttr[i].physics->shape == a) {
+            dBodyInd = i;
+          }
+          else if (texturesAttr[i].physics->shape == b) {
+            sBodyInd = i;
+          }
+        }
+      }
+    }
 
-  texturesAttr[dBodyInd].physics->inTouchWith = sBodyInd;
-  texturesAttr[sBodyInd].physics->inTouchWith = dBodyInd;
+    texturesAttr[dBodyInd].physics->inTouchWith = sBodyInd;
+    texturesAttr[sBodyInd].physics->inTouchWith = dBodyInd;
+    printf("D_ind %d in touch with S_ind %d\n", dBodyInd, sBodyInd);
+  }
   // Add a post step callback to safely remove the body and shape from the space.
   // Calling cpSpaceRemove*() directly from a collision handler callback can cause crashes.
   //cpSpaceAddPostStepCallback(space, (cpPostStepFunc)postStepRemove, b, NULL);
