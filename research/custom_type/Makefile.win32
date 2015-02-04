@@ -1,0 +1,37 @@
+IDIR =.
+CC=gcc
+ODIR=obj
+
+LUA_DIR=../../win32_dependency_libs/lua-5.2.3
+INCLUDES=-I$(IDIR) -I$(LUA_DIR)/include
+LDPATH=-L$(LUA_DIR)/lib
+
+CFLAGS=-g -m32
+LIBS=-llua52 -lRpcrt4
+
+src = numarray.c tree.c main.c
+objects = $(patsubst %.c,obj/%.o,$(src))
+
+program=custom_type_test
+
+.PHONY: all
+all: $(program)
+
+$(program): $(objects)
+	$(CC) -o $@ $^ $(CFLAGS) $(LDPATH) $(LIBS)
+
+$(objects): | obj
+
+obj:
+	@mkdir -p $@
+
+obj/%.o : %.c
+	@echo $<
+	$(CC) $(CFLAGS) -c $< -o $@ $(INCLUDES)
+
+.PHONY: clean
+clean:
+	del /F /Q "$(ODIR)\*" "*~" "*.exe"
+#	rm -f $(ODIR)/*.o *~ $(program)
+
+
