@@ -222,7 +222,7 @@ int rmnode (lua_State *L) {
   // free node strucrure
   /* free (unref) userdata in current node */
   for (i = 0; i < node->children_count; ++i) {
-    if (node->udreflist[i] != LUA_REFNIL) {
+    if (node->udreflist != NULL && node->udreflist[i] != LUA_REFNIL) {
       luaL_unref(L, LUA_REGISTRYINDEX, node->udreflist[i]);
       node->udreflist[i] = LUA_REFNIL;
       node->children[i]->parent = NULL;
@@ -232,10 +232,19 @@ int rmnode (lua_State *L) {
   if (node->dataType == LUA_TSTRING)
     free(node->data.charVal);
 
-  free(node->name);
-  free(node->children);
+  if (node->name)
+    free(node->name);
+
+  if (node->children)
+    free(node->children);
+
+  if (node->udreflist)
+    free(node->udreflist);
+
+  node->udreflist = NULL;
   node->children = NULL;
   node->parent = NULL;
+  node->name = NULL;
 
   return 0;
 }
